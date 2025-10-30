@@ -632,6 +632,7 @@ button:active {
 }
 
 /* 十连抽结果页面 */
+/* 十连抽结果页面样式 - 滚动优化 */
 .multi-pull-results {
     position: fixed;
     top: 0;
@@ -646,6 +647,7 @@ button:active {
     overflow: hidden;
     -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
 }
+
 .multi-pull-container {
     display: flex;
     flex-direction: column;
@@ -658,6 +660,7 @@ button:active {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     border: 2px solid var(--halloween-orange);
 }
+
 .multi-pull-header {
     padding: 15px 20px;
     background: rgba(0, 0, 0, 0.3);
@@ -671,6 +674,7 @@ button:active {
     color: var(--halloween-orange);
     margin-bottom: 5px;
 }
+
 .multi-pull-header p {
     font-size: 0.9rem;
     color: var(--text-light);
@@ -678,19 +682,163 @@ button:active {
     opacity: 0.8;
 }
 
+/* 滚动容器 - 关键修改 */
 .multi-pull-cards-container {
     flex: 1;
     overflow-y: auto;
     padding: 15px;
     -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+    /* 确保滚动区域可见 */
+    min-height: 0; /* 重要：允许flex子元素缩小 */
 }
 
+/* 卡片网格布局 */
 .multi-pull-cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     max-width: 100%;
     margin: 0 auto;
+    /* 确保网格有足够的高度来触发滚动 */
+    min-height: min-content;
+}
+
+/* 卡片样式调整以适应滚动 */
+.multi-pull-cards .card {
+    aspect-ratio: 2/3;
+    min-height: 180px; /* 确保最小高度 */
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 平板设备优化 */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .multi-pull-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    .multi-pull-header h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* 桌面设备优化 */
+@media (min-width: 1025px) {
+    .multi-pull-cards {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+    }
+    
+    .multi-pull-header h2 {
+        font-size: 2rem;
+    }
+    
+    .multi-pull-container {
+        max-height: 90vh;
+        margin: 5vh auto;
+    }
+    
+    /* 桌面端滚动条美化 */
+    .multi-pull-cards-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .multi-pull-cards-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+    }
+    
+    .multi-pull-cards-container::-webkit-scrollbar-thumb {
+        background: var(--halloween-orange);
+        border-radius: 4px;
+    }
+    
+    .multi-pull-cards-container::-webkit-scrollbar-thumb:hover {
+        background: var(--halloween-purple);
+    }
+}
+
+/* 小屏手机优化 */
+@media (max-width: 360px) {
+    .multi-pull-cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .multi-pull-header {
+        padding: 10px 15px;
+    }
+    
+    .multi-pull-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .multi-pull-header p {
+        font-size: 0.8rem;
+    }
+}
+
+/* 超小屏手机优化 */
+@media (max-width: 320px) {
+    .multi-pull-cards-container {
+        padding: 10px;
+    }
+    
+    .multi-pull-cards {
+        gap: 8px;
+    }
+}
+
+/* 高屏手机优化 - 确保有足够的滚动空间 */
+@media (min-height: 700px) and (max-width: 768px) {
+    .multi-pull-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+    .multi-pull-container {
+        flex-direction: row;
+    }
+    
+    .multi-pull-header {
+        width: 200px;
+        border-right: 1px solid var(--halloween-purple);
+        border-bottom: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .multi-pull-cards-container {
+        flex: 1;
+    }
+    
+    .multi-pull-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 防止iOS Safari的弹性滚动问题 */
+.multi-pull-results {
+    overscroll-behavior: contain; /* 防止滚动穿透 */
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .card:hover {
+        transform: none; /* 在触摸设备上移除悬停效果 */
+    }
+    
+    .close-multi-pull:active {
+        transform: scale(0.95);
+        background: linear-gradient(135deg, #6a3bc2, #5a2bb2);
+    }
 }
 
 /* 移动端关闭按钮优化 */
@@ -712,29 +860,24 @@ button:active {
     box-shadow: 0 5px 15px rgba(140, 82, 255, 0.4);
 }
 
-.multi-pull-cards {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
+/* 高DPI屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .multi-pull-container {
+        border-width: 1px; /* 在高DPI屏幕上减小边框宽度 */
+    }
 }
 
-.close-multi-pull {
-    margin-top: 30px;
-    padding: 12px 30px;
-    background: linear-gradient(135deg, var(--halloween-purple), #6a3bc2);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.close-multi-pull:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(140, 82, 255, 0.4);
+/* 滚动提示效果 - 当内容可滚动时显示渐变提示 */
+.multi-pull-cards-container {
+    /* 顶部阴影提示 */
+    background: 
+        linear-gradient(var(--halloween-card-bg) 30%, rgba(0,0,0,0)),
+        linear-gradient(rgba(0,0,0,0), var(--halloween-card-bg) 70%) 0 100%,
+        radial-gradient(farthest-side at 50% 0, rgba(0,0,0,0.2), rgba(0,0,0,0)),
+        radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,0.2), rgba(0,0,0,0)) 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+    background-attachment: local, local, scroll, scroll;
 }
 .card-count {
     position: absolute;

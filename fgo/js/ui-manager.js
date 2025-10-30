@@ -1,7 +1,7 @@
 // ui-manager.js - 万圣节抽卡模拟器界面管理
 
 class UIManager {
-    constructor() {
+ constructor() {
         this.cardDisplayEl = document.getElementById('cardDisplay');
         this.historyListEl = document.getElementById('historyList');
         this.pullAnimationEl = document.getElementById('pullAnimation');
@@ -24,10 +24,14 @@ class UIManager {
         // 添加触摸事件支持
         this.setupTouchEvents();
     }
-    setupTouchEvents() {
+     setupTouchEvents() {
         // 防止iOS Safari的弹性滚动
         document.addEventListener('touchmove', function(e) {
             if (e.target.closest('.multi-pull-results')) {
+                // 允许在十连抽界面内滚动
+                if (e.target.closest('.multi-pull-cards-container')) {
+                    return; // 允许滚动
+                }
                 e.preventDefault();
             }
         }, { passive: false });
@@ -106,6 +110,7 @@ class UIManager {
     }
 
     // 创建十连抽结果页面
+     // 创建十连抽结果页面
     createMultiPullResults() {
         this.multiPullResults = document.createElement('div');
         this.multiPullResults.className = 'multi-pull-results';
@@ -114,7 +119,7 @@ class UIManager {
             <div class="multi-pull-container">
                 <div class="multi-pull-header">
                     <h2>十连抽结果</h2>
-                    <p>点击卡片查看详情，点击空白处关闭</p>
+                    <p>上下滚动查看所有卡片，点击空白处关闭</p>
                     <button class="close-multi-pull">关闭</button>
                 </div>
                 <div class="multi-pull-cards-container">
@@ -140,6 +145,86 @@ class UIManager {
         this.multiPullResults.querySelector('.multi-pull-container').addEventListener('click', (e) => {
             e.stopPropagation();
         });
+
+        // 添加滚动事件监听，用于调试
+        this.multiPullResults.querySelector('.multi-pull-cards-container').addEventListener('scroll', (e) => {
+            console.log('Scrolling:', e.target.scrollTop);
+        });
+    }
+
+    // 显示十连抽结果
+    showMultiPullResults(cards) {
+        // 存储当前卡片数据
+        this.currentMultiPullCards = cards;
+        
+        const cardsContainer = this.multiPullResults.querySelector('#multiPullCards');
+        cardsContainer.innerHTML = '';
+        
+        cards.forEach((card, index) => {
+            const cardElement = document.createElement('div');
+            cardElement.className = `card rare-${card.rare}`;
+            cardElement.style.backgroundImage = `url(${card.class_image})`;
+            cardElement.innerHTML = `
+                <div class="card-info">
+                    <div class="card-name">${card.name}</div>
+                    <div class="card-class">${card.class}</div>
+                    <div class="card-rarity">${this.getRarityStars(card.rare)}</div>
+                </div>
+            `;
+            
+            // 添加点击事件
+            cardElement.addEventListener('click', () => {
+                this.showCardDetail(card);
+            });
+            
+            cardsContainer.appendChild(cardElement);
+        });
+        
+        this.multiPullResults.style.display = 'flex';
+        
+        // 添加键盘ESC键关闭支持
+        this.escKeyHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.hideMultiPullResults();
+            }
+        };
+        document.addEventListener('keydown', this.escKeyHandler);
+
+        // 确保滚动容器正确初始化
+        setTimeout(() => {
+            this.ensureScrollability();
+        }, 100);
+    }
+
+    // 确保滚动功能正常工作
+    ensureScrollability() {
+        const container = this.multiPullResults.querySelector('.multi-pull-cards-container');
+        const cards = this.multiPullResults.querySelector('#multiPullCards');
+        
+        if (container && cards) {
+            // 强制重排以确保正确计算高度
+            container.style.display = 'none';
+            container.offsetHeight; // 触发重排
+            container.style.display = 'block';
+            
+            console.log('Container height:', container.clientHeight);
+            console.log('Cards height:', cards.scrollHeight);
+            console.log('Can scroll:', cards.scrollHeight > container.clientHeight);
+        }
+    }
+
+    // 隐藏十连抽结果
+    hideMultiPullResults() {
+        this.multiPullResults.style.display = 'none';
+        
+        // 移除键盘事件监听
+        if (this.escKeyHandler) {
+            document.removeEventListener('keydown', this.escKeyHandler);
+            this.escKeyHandler = null;
+        }
+        
+        // 清空当前卡片数据
+        this.currentMultiPullCards = [];
     }
 
 showMultiPullResults(cards) {
