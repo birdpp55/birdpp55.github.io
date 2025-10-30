@@ -642,21 +642,74 @@ button:active {
     z-index: 1500;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    padding: 10px;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
 }
-
+.multi-pull-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--halloween-card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--halloween-orange);
+}
 .multi-pull-header {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--halloween-purple);
     text-align: center;
-    margin-bottom: 30px;
+    flex-shrink: 0; /* 防止头部被压缩 */
 }
 
 .multi-pull-header h2 {
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     color: var(--halloween-orange);
-    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 5px;
+}
+.multi-pull-header p {
+    font-size: 0.9rem;
+    color: var(--text-light);
     margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.multi-pull-cards-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+}
+
+.multi-pull-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* 移动端关闭按钮优化 */
+.close-multi-pull {
+    background: linear-gradient(135deg, var(--halloween-purple), #6a3bc2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 44px; /* 确保触摸目标足够大 */
+    min-width: 60px;
+}
+
+.close-multi-pull:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(140, 82, 255, 0.4);
 }
 
 .multi-pull-cards {
@@ -887,5 +940,81 @@ button:active {
     
     .multi-pull-cards .card {
         height: 200px;
+    }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+    .multi-pull-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    .multi-pull-header h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* 桌面设备优化 */
+@media (min-width: 1025px) {
+    .multi-pull-cards {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+    }
+    
+    .multi-pull-header h2 {
+        font-size: 2rem;
+    }
+    
+    .multi-pull-container {
+        max-height: 90vh;
+        margin: 5vh auto;
+    }
+}
+
+/* 小屏手机优化 */
+@media (max-width: 360px) {
+    .multi-pull-cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .multi-pull-header {
+        padding: 10px 15px;
+    }
+    
+    .multi-pull-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .multi-pull-header p {
+        font-size: 0.8rem;
+    }
+}
+
+/* 卡片在移动端的优化 */
+.card {
+    min-height: 200px; /* 确保卡片在移动端有足够高度 */
+}
+
+/* 防止iOS Safari的弹性滚动问题 */
+.multi-pull-results {
+    overscroll-behavior: contain; /* 防止滚动穿透 */
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .card:hover {
+        transform: none; /* 在触摸设备上移除悬停效果 */
+    }
+    
+    .close-multi-pull:active {
+        transform: scale(0.95);
+        background: linear-gradient(135deg, #6a3bc2, #5a2bb2);
+    }
+}
+
+/* 高DPI屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .multi-pull-container {
+        border-width: 1px; /* 在高DPI屏幕上减小边框宽度 */
     }
 }

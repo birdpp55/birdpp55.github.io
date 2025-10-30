@@ -16,12 +16,22 @@ class UIManager {
         // 创建卡片详情模态框和十连抽结果页面
         this.createCardDetailModal();
         this.createMultiPullResults();
-        this.createCompletionCelebration(); // 新增：创建全收集庆祝效果
+        this.createCompletionCelebration();
         
         // 存储当前卡片数据
         this.currentMultiPullCards = [];
+        
+        // 添加触摸事件支持
+        this.setupTouchEvents();
     }
-
+    setupTouchEvents() {
+        // 防止iOS Safari的弹性滚动
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.multi-pull-results')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
     // 创建全角色收集庆祝效果
     createCompletionCelebration() {
         this.completionCelebration = document.createElement('div');
@@ -101,23 +111,38 @@ class UIManager {
         this.multiPullResults.className = 'multi-pull-results';
         this.multiPullResults.style.display = 'none';
         this.multiPullResults.innerHTML = `
-            <div class="multi-pull-header">
-                <h2>十连抽结果</h2>
-                <p>点击卡片查看详情</p>
+            <div class="multi-pull-container">
+                <div class="multi-pull-header">
+                    <h2>十连抽结果</h2>
+                    <p>点击卡片查看详情，点击空白处关闭</p>
+                    <button class="close-multi-pull">关闭</button>
+                </div>
+                <div class="multi-pull-cards-container">
+                    <div class="multi-pull-cards" id="multiPullCards"></div>
+                </div>
             </div>
-            <div class="multi-pull-cards" id="multiPullCards"></div>
-            <button class="close-multi-pull">关闭</button>
         `;
         document.body.appendChild(this.multiPullResults);
 
-        // 绑定关闭事件
+        // 绑定关闭事件 - 点击背景关闭
+        this.multiPullResults.addEventListener('click', (e) => {
+            if (e.target === this.multiPullResults) {
+                this.hideMultiPullResults();
+            }
+        });
+
+        // 绑定关闭事件 - 点击关闭按钮
         this.multiPullResults.querySelector('.close-multi-pull').addEventListener('click', () => {
             this.hideMultiPullResults();
         });
+
+        // 绑定触摸事件 - 防止卡片点击误触发背景关闭
+        this.multiPullResults.querySelector('.multi-pull-container').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
 
-    // 显示十连抽结果 - 显示实际的10张卡（包括重复）
-    showMultiPullResults(cards) {
+showMultiPullResults(cards) {
         // 存储当前卡片数据
         this.currentMultiPullCards = cards;
         
@@ -145,16 +170,29 @@ class UIManager {
         });
         
         this.multiPullResults.style.display = 'flex';
+        
+        // 添加键盘ESC键关闭支持
+        this.escKeyHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.hideMultiPullResults();
+            }
+        };
+        document.addEventListener('keydown', this.escKeyHandler);
     }
 
     // 隐藏十连抽结果
     hideMultiPullResults() {
         this.multiPullResults.style.display = 'none';
         
+        // 移除键盘事件监听
+        if (this.escKeyHandler) {
+            document.removeEventListener('keydown', this.escKeyHandler);
+            this.escKeyHandler = null;
+        }
+        
         // 清空当前卡片数据
         this.currentMultiPullCards = [];
     }
-
     // 显示卡片详情 - 使用image而不是class_image
     showCardDetail(card, count = 1) {
         const modal = this.modal;
