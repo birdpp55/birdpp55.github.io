@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万圣节Limbo抽卡模拟器</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>万圣节抽卡模拟器</h1>
+            <p class="subtitle">不给糖就捣蛋！收集万圣节主题卡片！</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="gacha-section">
+                <div class="gacha-controls">
+                    <div class="pull-buttons">
+                        <button class="single-pull" id="singlePull">单抽 (3圣晶石)</button>
+                        <button class="multi-pull" id="multiPull">十连抽 (30圣晶石)</button>
+                    </div>
+                    
+                    <div class="probability-info">
+                        <h3>抽卡概率</h3>
+                        <div class="rarity-probability">
+                            <div class="rarity-item">
+                                <div class="rarity-name">
+                                    <span class="rarity-dot rare-5"></span>
+                                    <span>五星</span>
+                                </div>
+                                <span>10%</span>
+                            </div>
+                            <div class="rarity-item">
+                                <div class="rarity-name">
+                                    <span class="rarity-dot rare-4"></span>
+                                    <span>四星</span>
+                                </div>
+                                <span>20%</span>
+                            </div>
+                            <div class="rarity-item">
+                                <div class="rarity-name">
+                                    <span class="rarity-dot rare-3"></span>
+                                    <span>三星</span>
+                                </div>
+                                <span>70%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="results-section">
+                <div class="results-header">
+                    <h2>抽卡结果</h2>
+                    <div class="pull-counter">圣晶石: <span id="coinCount">30</span></div>
+                </div>
+                
+                <div class="card-display" id="cardDisplay">
+                    <!-- 卡片将通过JavaScript动态添加 -->
+                </div>
+                
+                <div class="history-section">
+                    <h3>抽卡记录</h3>
+                    <div class="history-list" id="historyList">
+                        <!-- 历史记录将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                
+                <div class="stats-section">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalPulls">0</div>
+                        <div class="stat-label">总抽卡次数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="legendaryCount">0</div>
+                        <div class="stat-label">五星卡片</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="epicCount">0</div>
+                        <div class="stat-label">四星卡片</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <div class="pull-animation" id="pullAnimation">
+        <div class="animated-card" id="animatedCard"></div>
+    </div>
+
+    <!-- 加载JavaScript文件 -->
+    <script src="js/data/cards.js"></script>
+    <script src="js/gacha-system.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
