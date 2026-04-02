@@ -30,12 +30,12 @@ class GachaSystem {
         const rand = Math.random() * 100;
         let targetRarity;
         
-        // 调整概率：5星10%，4星20%，3星70%
+        // 调整概率：5星10%，4星40%，3星50%
         if (rand < 10) { // 5星: 10%
             targetRarity = 5;
-        } else if (rand < 30) { // 4星: 20%
+        } else if (rand < 50) { // 4星: 50%
             targetRarity = 4;
-        } else { // 3星: 70%
+        } else { // 3星: 50%
             targetRarity = 3;
         }
         
